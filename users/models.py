@@ -1,5 +1,4 @@
 from django.db                 import models
-from django.db.models.deletion import CASCADE
 
 class User(models.Model):
     name          = models.CharField(max_length=45)
@@ -11,7 +10,7 @@ class User(models.Model):
     profile_photo = models.URLField(max_length=200, null=True)
     description   = models.TextField(null=True)
     position      = models.CharField(max_length=45, null=True)
-    subscribe     = models.ForeignKey('self', on_delete=CASCADE)
+    subscribe     = models.ForeignKey('self', on_delete=models.CASCADE)
     created_at    = models.DateField(auto_now_add=True)
     updated_at    = models.DateField(auto_now=True)
 
