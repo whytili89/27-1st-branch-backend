@@ -5,6 +5,7 @@ from django.http  import JsonResponse, HttpResponse
 
 from .models      import User
 from my_settings  import SECRET_KEY
+from .validation  import validation_email, validation_phone_number, validation_password
 
 class SignUpView(View):
     def post(self, request):
@@ -24,18 +25,9 @@ class SignUpView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
 
-            REGEX_EMAIL = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA-Z0-9-.]+$'
-            REGEX_PHONE_NUMBER = '^01[016789]{1}-?([0-9]{3,4})-?[0-9]{4}$'
-            REGEX_PASSWORD = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}'
-
-            if not re.match(REGEX_EMAIL, email):
-                return JsonResponse({'message': 'INVALID_EMAIL'}, status=400)
-
-            if not re.match(REGEX_PHONE_NUMBER, phone_number):
-                return JsonResponse({'message': 'INVALID_PHONE_NUMBER'}, status=400)
-
-            if not re.match(REGEX_PASSWORD, password):
-                return JsonResponse({'message':'INVALID_PASSWORD'}, status=400)
+            validation_email(email)
+            validation_phone_number(phone_number)
+            validation_password(password)
 
             User.objects.create(
                 name          = name,
