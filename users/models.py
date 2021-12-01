@@ -10,7 +10,7 @@ class User(models.Model):
     profile_photo = models.URLField(max_length=200, null=True)
     description   = models.TextField(null=True)
     position      = models.CharField(max_length=45, null=True)
-    subscribe     = models.ForeignKey('self', on_delete=models.CASCADE)
+    subscribe     = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
     created_at    = models.DateField(auto_now_add=True)
     updated_at    = models.DateField(auto_now=True)
 
