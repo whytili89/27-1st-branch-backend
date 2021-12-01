@@ -5,7 +5,7 @@ from django.http  import JsonResponse, HttpResponse
 
 from .models      import User
 from my_settings  import SECRET_KEY
-from .validation  import validation_email, validation_phone_number, validation_password
+from .validation  import validate_email, validate_phone_number, validate_password
 
 class SignUpView(View):
     def post(self, request):
@@ -25,9 +25,9 @@ class SignUpView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
 
-            validation_email(email)
-            validation_phone_number(phone_number)
-            validation_password(password)
+            validate_email(email)
+            validate_phone_number(phone_number)
+            validate_password(password)
 
             User.objects.create(
                 name          = name,
