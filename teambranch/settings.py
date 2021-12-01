@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'users',
     'postings',
     'keywords',
-    'tags'
+    'branch_tags'
 ]
 
 MIDDLEWARE = [
