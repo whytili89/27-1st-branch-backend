@@ -3,7 +3,6 @@ import django
 import csv
 import sys
 
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "teambranch.settings")
 django.setup()
 
@@ -18,7 +17,6 @@ CSV_PATH_POSTINGS      = "csv/posting_fake.csv"
 CSV_PATH_PORSTING_TAGS = "csv/posting_tag_fake_data.csv"
 CSV_PATH_USER_TAGS     = "csv/user_tag_fake_data.csv"
 
-
 if not User.objects.all() :
     with open(CSV_PATH_USERS) as (in_file) : 
         data_reader = csv.reader(in_file)
@@ -32,6 +30,7 @@ if not User.objects.all() :
                 password     = row[3],
                 phone_number = row[4]
             )
+
 if not Keyword.objects.all() :
     with open(CSV_PATH_KEYWORDS) as (in_file) : 
         data_reader = csv.reader(in_file)
@@ -62,6 +61,7 @@ if not UserTag.objects.all() :
             UserTag.objects.create(
                 name = row[0]
             )
+
 if not Posting.objects.all() :
     with open(CSV_PATH_POSTINGS) as (in_file) : 
         data_reader = csv.reader(in_file)
@@ -76,6 +76,3 @@ if not Posting.objects.all() :
                 user_id    = row[4],
                 keyword_id = row[5]
             )
-
-        
-
