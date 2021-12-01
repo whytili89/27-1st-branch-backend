@@ -20,8 +20,7 @@ class SignUpView(View):
             profile_photo = data.get('profile_photo', None)
             description   = data.get('description', None)
             position      = data.get('position', None)
-            subscribe     = data.get('subscribe', None)
-
+        
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
 
@@ -47,8 +46,7 @@ class SignUpView(View):
                 github        = github,
                 profile_photo = profile_photo,
                 description   = description,
-                position      = position,
-                subscribe     = subscribe
+                position      = position
             )
             return JsonResponse({'message':'SUCCESS!'}, status=201)
 
