@@ -4,6 +4,7 @@ from django.views import View
 from django.http  import JsonResponse, HttpResponse
 
 from .models      import User
+from branch_tags.models import UserTag
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
 
@@ -71,3 +72,23 @@ class SignInView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
+
+class ListByTag(View) :
+    def get(self, request, tag_id) :
+        try :
+            result= []
+            userTag = UserTag.objects.get(id = tag_id)
+            users = userTag.users.order_by('?')[:6]
+            if not users.exists() :
+                return JsonResponse({'MESSGE' : 'NO_USERS'})
+            for user in users :
+                result.append({
+                    'profile_photo' : user.profile_photo,
+                    'name' : user.name,
+                    'position' : user.position,
+                    'description' : user.description,
+                    'tags' : list(user.user_tags.values('name'))
+                })
+            return JsonResponse({'result':result}, status=200)
+        except UserTag.DoesNotExist :
+            return JsonResponse({'MESSAGE' : 'USER_TAG_DOES_NOT_EXSIT'}, status=400)
