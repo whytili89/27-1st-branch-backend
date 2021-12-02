@@ -2,16 +2,15 @@ from django.db                 import models
 
 from users.models              import User
 from keywords.models           import Keyword
+from core.models               import TimeStampModel
 
-class Posting(models.Model): 
+class Posting(TimeStampModel): 
     title         = models.CharField(max_length=100)
     sub_title     = models.CharField(max_length=200)
     content       = models.TextField()
     thumbnail     = models.URLField()
     user          = models.ForeignKey(User, on_delete=models.CASCADE)
     keyword       = models.ForeignKey(Keyword, on_delete=models.CASCADE)
-    created_at    = models.DateField(auto_now_add=True)
-    updated_at    = models.DateField(auto_now=True)
 
     class Meta:
         db_table = 'postings'
@@ -23,11 +22,9 @@ class Like(models.Model):
     class Meta:
         db_table = 'likes'
 
-class Comment(models.Model):
+class Comment(TimeStampModel):
     user         = models.ForeignKey(User, on_delete=models.CASCADE)
     reply        = models.TextField()
-    created_at   = models.DateField(auto_now_add=True)
-    updated_at   = models.DateField(auto_now=True)
 
     class Meta:
         db_table = 'comments'
