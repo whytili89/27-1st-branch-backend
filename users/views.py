@@ -50,7 +50,7 @@ class SignUpView(View):
 class SignInView(View):
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            data         = json.loads(request.body)
 
             email        = data.get('email')
             phone_number = data.get('phone_number')
