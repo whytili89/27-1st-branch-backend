@@ -74,7 +74,7 @@ class SignInView(View):
 
 class ListView(View) :
     def get(self, request) :
-        users = User.objects.all()
+        users = User.objects.all().order_by('?')[:6]
         result = []
 
         if users is None :
