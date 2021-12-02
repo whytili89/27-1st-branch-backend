@@ -1,5 +1,4 @@
 import json, bcrypt, jwt
-from re import U
 
 from django.views import View
 from django.http  import JsonResponse, HttpResponse
