@@ -61,11 +61,11 @@ class SignInView(View):
             if not phone_number:
                 user = User.objects.get(email=email)
 
-            if bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
-                token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm=ALGORITHM)
-                return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN':token}, status=200)
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-            return JsonResponse({'message':'INVALID_USER'}, status=401)
+            token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm=ALGORITHM)
+            return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN':token}, status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
