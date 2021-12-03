@@ -6,6 +6,7 @@ from django.http  import JsonResponse, HttpResponse
 from .models      import User
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
+from core.utils   import login_decorator
 
 class SignUpView(View):
     def post(self, request):
