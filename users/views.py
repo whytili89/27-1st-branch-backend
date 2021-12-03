@@ -7,7 +7,7 @@ from .models      import User
 from branch_tags.models import UserTag
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
-from core.utils   import login_decorator
+from core.utils import login_decorator
 
 class SignUpView(View):
     def post(self, request):
@@ -73,7 +73,6 @@ class SignInView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
-<<<<<<< HEAD
 
 class UserListView(View) :
     def get(self, request) :
@@ -87,13 +86,11 @@ class UserListView(View) :
             return JsonResponse({'MESSGE' : 'NO_USERS'})
 
         user_list_by_tag =[{
-            'profile_photo' : user.profile_photo,
-            'name' : user.name,
-            'position' : user.position,
-            'description' : user.description,
-            'tags' : list(user.user_tags.values('name'))
+            'profile_photo': user.profile_photo,
+            'name'         : user.name,
+            'position'     : user.position,
+            'description'  : user.description,
+            'tags'         : list(user.user_tags.values('name'))
             } for user in users]
 
         return JsonResponse({'SUCCESS': user_list_by_tag}, status=200)
-=======
->>>>>>> main
