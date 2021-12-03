@@ -1,6 +1,9 @@
-from django.db                 import models
+from core.models import TimeStampModel
+from django.db   import models
 
-class User(models.Model):
+from core.models import TimeStampModel
+
+class User(TimeStampModel):
     name          = models.CharField(max_length=45)
     nickname      = models.CharField(max_length=45)
     email         = models.EmailField(unique=True)
@@ -11,8 +14,6 @@ class User(models.Model):
     description   = models.TextField(null=True)
     position      = models.CharField(max_length=45, null=True)
     subscribe     = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
-    created_at    = models.DateField(auto_now_add=True)
-    updated_at    = models.DateField(auto_now=True)
 
     class Meta:
         db_table = 'users'
