@@ -76,11 +76,10 @@ class SignInView(View):
 class UserListView(View) :
     def get(self, request) :
         limit = int(request.GET.get('limit', 6))
-        order_request = request.GET.get('sort', '?')
         user_tag_id = request.GET.get('user_tag_id', 1)
 
         userTag = UserTag.objects.get(id = user_tag_id)
-        users = userTag.users.order_by(order_request)[:limit]
+        users = userTag.users.order_by('?')[:limit]
 
         if not users.exists() :
             return JsonResponse({'MESSGE' : 'NO_USERS'})
