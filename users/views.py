@@ -1,8 +1,8 @@
 import json, bcrypt, jwt
 
 from django.core.exceptions import ValidationError
-from django.views import View
-from django.http  import JsonResponse, HttpResponse
+from django.views           import View
+from django.http            import JsonResponse, HttpResponse
 
 from .models      import User
 from my_settings  import SECRET_KEY, ALGORITHM
@@ -32,7 +32,6 @@ class SignUpView(View):
             validate_password(password)
 
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
 
             User.objects.create(
                 name          = name,
@@ -92,6 +91,9 @@ class UserProfileView(View):
         
         except User.DoesNotExist:
             return JsonResponse({"message" : "INVALID_USER"}, status=401)
+
+        except User.MultipleObjectsReturned:
+             return JsonResponse({"message" : "INVALID_USER"}, status=401)  
     
     def post(self, request, user_id):
         try:
@@ -113,7 +115,7 @@ class UserProfileView(View):
             user.phone_number  = phone_number
             user.save()
             
-            return JsonResponse({"message":"success"}, status=201) 
+            return JsonResponse({"message":"SUCCESS"}, status=201) 
         
         except ValidationError: 
             return JsonResponse({"message" : "INVALID_VALUE"}, status=400)
