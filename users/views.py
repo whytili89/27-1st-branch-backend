@@ -7,6 +7,7 @@ from .models      import User
 from branch_tags.models import UserTag
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
+from core.utils   import login_decorator
 
 class SignUpView(View):
     def post(self, request):
