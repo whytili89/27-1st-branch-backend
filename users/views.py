@@ -55,7 +55,7 @@ class SignInView(View):
 
             email        = data.get('email')
             phone_number = data.get('phone_number')
-            
+
             if not email:
                 user = User.objects.get(phone_number=phone_number)
 
@@ -73,22 +73,24 @@ class SignInView(View):
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
 
-class ListByTag(View) :
-    def get(self, request, tag_id) :
-        try :
-            result= []
-            userTag = UserTag.objects.get(id = tag_id)
-            users = userTag.users.order_by('?')[:6]
-            if not users.exists() :
-                return JsonResponse({'MESSGE' : 'NO_USERS'})
-            for user in users :
-                result.append({
-                    'profile_photo' : user.profile_photo,
-                    'name' : user.name,
-                    'position' : user.position,
-                    'description' : user.description,
-                    'tags' : list(user.user_tags.values('name'))
-                })
-            return JsonResponse({'result':result}, status=200)
-        except UserTag.DoesNotExist :
-            return JsonResponse({'MESSAGE' : 'USER_TAG_DOES_NOT_EXSIT'}, status=400)
+class UserListView(View) :
+    def get(self, request) :
+        limit = int(request.GET.get('limit', 6))
+        order_request = request.GET.get('sort', '?')
+        user_tag_id = request.GET.get('user_tag_id', 1)
+
+        userTag = UserTag.objects.get(id = user_tag_id)
+        users = userTag.users.order_by(order_request)[:limit]
+
+        if not users.exists() :
+            return JsonResponse({'MESSGE' : 'NO_USERS'})
+
+        user_list_by_tag =[{
+            'profile_photo' : user.profile_photo,
+            'name' : user.name,
+            'position' : user.position,
+            'description' : user.description,
+            'tags' : list(user.user_tags.values('name'))
+            } for user in users]
+
+        return JsonResponse({'SUCCESS': user_list_by_tag}, status=200)
