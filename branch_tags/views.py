@@ -7,12 +7,12 @@ from .models import UserTag
 
 class UserTagListView(View) :
     def get(self, request) :
-        userTags = UserTag.objects.all()
+        user_tag = UserTag.objects.all()
 
-        if userTags is None : 
+        if user_tag is None :
             return JsonResponse({'MESSAGE' : 'NO_USER_TAG'})
 
-        userTag_list = [{'tag_name' : userTag.name} for userTag in userTags]
+        userTag_list = [{'tag_name' : userTag.name} for userTag in user_tag]
 
         return JsonResponse({'result' : userTag_list}, status=200)
 
