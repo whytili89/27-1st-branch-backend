@@ -48,6 +48,8 @@ class SignUpView(View):
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'message':e.message}, status=400)
 
 class SignInView(View):
     def post(self, request):
@@ -73,6 +75,8 @@ class SignInView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
+        except ValidationError as e:
+            return JsonResponse({'message':e.message}, status=400)
 
 class UserProfileView(View):
     def get(self, request, user_id):
