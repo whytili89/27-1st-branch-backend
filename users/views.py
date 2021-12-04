@@ -77,6 +77,7 @@ class SignInView(View):
 class UserListView(View) :
     def get(self, request) :
         limit = int(request.GET.get('limit', 6))
+        offset = int(request.GET.get('offset', 0))
         user_tag_id = request.GET.get('user_tag_id', 1)
 
         userTag = UserTag.objects.get(id = user_tag_id)
