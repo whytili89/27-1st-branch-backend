@@ -1,5 +1,4 @@
 import json
-from django.core.exceptions import MultipleObjectsReturned
 
 from django.views import View
 from django.http  import JsonResponse
@@ -15,7 +14,7 @@ class PostView(View):
                 "created_at"  : posting.created_at,
                 "content"     : posting.content,
                 "description" : posting.user.description,
-                "user_name"   : posting.user.name
+                "nickname"    : posting.user.nickname
             }
             return JsonResponse({"message": "SUCCESS", "results" : results })
 
