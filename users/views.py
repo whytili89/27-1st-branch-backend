@@ -2,6 +2,7 @@ import json, bcrypt, jwt
 
 from django.views import View
 from django.http  import JsonResponse, HttpResponse
+from django.core.exceptions import ValidationError
 
 from .models      import User
 from my_settings  import SECRET_KEY, ALGORITHM
@@ -44,9 +45,11 @@ class SignUpView(View):
                 position      = position
             )
             return JsonResponse({'message':'SUCCESS!'}, status=201)
-
+        
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'message': e.message}, status=400)
 
 class SignInView(View):
     def post(self, request):
@@ -72,3 +75,5 @@ class SignInView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
+        except ValidationError as e:
+            return JsonResponse({'message': e.message}, status=400)
