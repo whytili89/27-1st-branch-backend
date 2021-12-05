@@ -27,6 +27,9 @@ class SignUpView(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
 
+            if User.objects.filter(phone_number=phone_number).exists():
+                return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
+
             validate_email(email)
             validate_phone_number(phone_number)
             validate_password(password)

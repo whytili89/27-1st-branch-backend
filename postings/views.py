@@ -6,7 +6,7 @@ from .models          import Posting
 class PostListView(View):
     def get(self, request, keyword_id):
         order_method = request.GET.get('sort_method', 'created_at')
-        limit        = int(request.GET.get('limit', 5))
+        limit        = int(request.GET.get('limit', 10))
         offset       = int(request.GET.get('offset', 0))
 
         posts = Posting.objects.filter(keyword_id=keyword_id).order_by(order_method)[offset:limit]
