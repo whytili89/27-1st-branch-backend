@@ -2,9 +2,12 @@ import json, bcrypt, jwt
 
 from django.views import View
 from django.http  import JsonResponse, HttpResponse
+from django.db.models import Count
 
 from .models      import User
 from branch_tags.models import UserTag
+from postings.models import Posting
+
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
 from core.utils import login_decorator
@@ -78,15 +81,21 @@ class UserListView(View) :
     def get(self, request) :
         limit = int(request.GET.get('limit', 6))
         offset = int(request.GET.get('offset', 0))
-        user_tag_id = request.GET.get('user_tag_id', 1)
+        user_tag_id = request.GET.get('user_tag_id', None)
+        keyword_id = request.GET.get('keyword_id', None)
 
-        userTag = UserTag.objects.get(id = user_tag_id)
-        users = userTag.users.order_by('?')[:limit]
+        if keyword_id :
+            queryset = Posting.objects.filter(keyword_id=keyword_id).values('user_id')
 
-        if not users.exists() :
-            return JsonResponse({'MESSGE' : 'NO_USERS'})
+            postings = Posting.objects.select_related().values('user_id', 'user__name','user__profile_photo').annotate(post_count=Count('user_id')).filter(user_id__in=queryset).order_by('-post_count')
 
-        user_list_by_tag =[{
+            user_list=[user for user in postings]
+
+        if user_tag_id :
+            userTag = UserTag.objects.get(id = user_tag_id)
+            users = userTag.users.order_by('?')[:limit]
+
+            user_list=[{
             'profile_photo': user.profile_photo,
             'name'         : user.name,
             'position'     : user.position,
@@ -94,4 +103,4 @@ class UserListView(View) :
             'tags'         : list(user.user_tags.values('name'))
             } for user in users]
 
-        return JsonResponse({'SUCCESS': user_list_by_tag}, status=200)
+        return JsonResponse({'SUCCESS': user_list }, status=200)
