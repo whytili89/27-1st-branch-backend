@@ -15,7 +15,7 @@ class CommentView(View):
             data    = json.load(request.body)
             reply   = data['reply'] 
             user    = request.user
-            print(user)
+            
             Comment.objects.create( 
                 reply   = reply,
                 user    = user.id,
