@@ -5,22 +5,22 @@ from django.http  import JsonResponse
 
 from .models      import Comment
 from .models      import Posting
+from core.utils   import login_decorator
 
 
 class CommentView(View):
-    def post(self,request,post_id):
+    @login_decorator
+    def post(self,request,posting_id):
         try:
             data    = json.load(request.body)
-            
             reply   = data['reply'] 
             user    = request.user
-            posting = Posting.objects.get(id=post_id)
-
+            print(user)
             Comment.objects.create( 
                 reply   = reply,
-                user    = user,
-                posting = posting
+                user    = user.id,
+                posting = posting_id
             )
 
         except KeyError:
-             return JsonResponse({"message" : "INVALID_"})
+             return JsonResponse({"message" : "INVALID_REPLY"})
