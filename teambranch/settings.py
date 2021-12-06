@@ -1,13 +1,8 @@
 from pathlib     import Path
-from my_settings import DATABASES, SECRET_KEY
-
-import pymysql
-
-pymysql.install_as_MySQLdb()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = SECRET_KEY
+SECRET_KEY = "SECRET_KEY"
 
 DEBUG = True
 
@@ -85,8 +80,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'teambranch.wsgi.application'
 
-DATABASES = DATABASES
-
+DATABASES = {
+    'default' : {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'teambranch',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

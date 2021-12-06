@@ -78,6 +78,7 @@ class SignInView(View):
         except ValidationError as e:
             return JsonResponse({'message':e.message}, status=400)
 
+<<<<<<< Updated upstream
 class UserProfileView(View):
     def get(self, request, user_id):
         try:
@@ -123,3 +124,31 @@ class UserProfileView(View):
         
         except ValidationError: 
             return JsonResponse({"message" : "INVALID_VALUE"}, status=400)
+
+class UserListView(View) :
+    def get(self, request) :
+        limit       = int(request.GET.get('limit', 6))
+        offset      = int(request.GET.get('offset', 0))
+        user_tag_id = request.GET.get('user_tag_id', None)
+        keyword_id  = request.GET.get('keyword_id', None)
+        
+        q = Q()
+
+        if keyword_id:
+            q &= Q(posting__keyword_id=keyword_id)
+
+        if user_tag_id:
+            q &= Q(user_tags__id=user_tag_id)
+    
+        users = User.objects.filter(q).annotate(total_posting_count=Count("posting__id"))
+
+        results =[{
+            'profile_photo' : user.profile_photo,
+            'name'          : user.name,
+            'position'      : user.position,
+            'description'   : user.description,
+            'posting_count' : user.posting_count,
+            'tags'          : list(user.user_tags.values('name'))
+        } for user in users]
+
+        return JsonResponse({'SUCCESS': results}, status=200)
