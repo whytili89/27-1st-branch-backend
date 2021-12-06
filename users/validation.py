@@ -8,12 +8,12 @@ REGEX_PASSWORD = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*
 
 def validate_email(email):
     if not re.match(REGEX_EMAIL, email):
-        raise ValidationError({'message': 'INVALID_EMAIL'}, status=400)
+        raise ValidationError('INVALID_EMAIL')
 
 def validate_phone_number(phone_number):
     if not re.match(REGEX_PHONE_NUMBER, phone_number):
-        raise ValidationError({'message': 'INVALID_PHONE_NUMBER'}, status=400)
+        raise ValidationError('INVALID_PHONE_NUMBER')
 
 def validate_password(password):
     if not re.match(REGEX_PASSWORD, password):
-        raise ValidationError({'message':'INVALID_PASSWORD'}, status=400)
+        raise ValidationError('INVALID_PASSWORD')
