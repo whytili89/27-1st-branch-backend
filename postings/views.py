@@ -1,7 +1,7 @@
 import json
 
 from django.views import View
-from django.http  import JsonResponse
+from django.http  import JsonResponse, HttpResponse
 
 from .models      import Posting
 from .models      import Comment
@@ -45,3 +45,21 @@ class CommentView(View):
 
         except KeyError:
              return JsonResponse({"message" : "INVALID_REPLY"}, status=401)
+    
+    def get(self,request,posting_id):
+        try:
+        
+            comment = Posting.objects.get(id=posting_id).comment_set.values('reply')
+            user    = Comment.objects.filter()
+        
+            results= {
+                "comment" : comment,
+                "user"    : user.name
+                }
+        
+            return JsonResponse({"message":"SUCCESS", "results" : results})
+        
+        except Comment.DoesNotExist:
+            return JsonResponse({"message": "INVALID_COMMENT"})
+
+
