@@ -8,7 +8,7 @@ class Posting(TimeStampModel):
     title         = models.CharField(max_length=100)
     sub_title     = models.CharField(max_length=200)
     content       = models.TextField()
-    thumbnail     = models.URLField()
+    thumbnail     = models.URLField(max_length=1000)
     user          = models.ForeignKey(User, on_delete=models.CASCADE)
     keyword       = models.ForeignKey(Keyword, on_delete=models.CASCADE)
 
@@ -24,6 +24,7 @@ class Like(models.Model):
 
 class Comment(TimeStampModel):
     user         = models.ForeignKey(User, on_delete=models.CASCADE)
+    posting      = models.ForeignKey('Posting', on_delete=models.CASCADE, null=True)
     reply        = models.TextField()
 
     class Meta:
