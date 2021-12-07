@@ -19,6 +19,9 @@ class UsersUserTags(models.Model):
     user      = models.ForeignKey(User, db_column='user_id', on_delete=CASCADE)
     user_tag  = models.ForeignKey('UserTag', db_column='user_tag_id', on_delete=CASCADE)
 
+    class Meta:
+        db_table = 'users_usertags'
+
 class PostingTag(TimeStampModel):
     name       = models.CharField(max_length=45, unique=True)
     postings   = models.ManyToManyField(Posting, through='PostingsPostingTags', related_name='posting_tags')
