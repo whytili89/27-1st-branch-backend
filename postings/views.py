@@ -32,34 +32,33 @@ class CommentView(View):
     @login_decorator
     def post(self,request,posting_id):
         try:
-            
-            Posting.objects.get(id=posting_id)
-               
-            
             data    = json.loads(request.body)
+
+            posting= Posting.objects.get(id=posting_id)
             reply   = data['reply'] 
             user    = request.user
-            posting = posting_id
-
-            print(posting)
+            
             Comment.objects.create( 
                 reply   = reply,
                 user    = user,
                 posting = posting
             )
+
             return JsonResponse({"message" : "SUCCESS"}, status=201)
 
         except KeyError:
              return JsonResponse({"message" : "INVALID_REPLY"}, status=401)
+
+        except Posting.DoesNotExist:
+            return JsonResponse({"message": "POSTING_INVALID"}, status=400)     
     
     def get(self,request,posting_id):
         try:
         
             comment = Posting.objects.get(id=posting_id).comment_set.values('reply')
-           
-        
+            
             results= {
-                "comment" : list(comment),
+                "comment" : list(comment)
                 
             }
             return JsonResponse({"message":"SUCCESS", "results" : results}, status=201)
