@@ -1,7 +1,7 @@
 import json
 
 from django.views import View
-from django.http  import JsonResponse, HttpResponse
+from django.http  import JsonResponse
 
 from .models      import Posting
 from .models      import Comment
@@ -59,7 +59,7 @@ class CommentView(View):
             
             results= {
                 "comment" : list(comment)
-                
+
             }
             return JsonResponse({"message":"SUCCESS", "results" : results}, status=201)
         
