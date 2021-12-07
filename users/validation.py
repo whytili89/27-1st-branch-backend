@@ -16,4 +16,4 @@ def validate_phone_number(phone_number):
 
 def validate_password(password):
     if not re.match(REGEX_PASSWORD, password):
-        raise ValidationError('INVALID_PASSWORD')
+        raise ValidationError('INVALID_PASSWORD')    
