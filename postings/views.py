@@ -18,9 +18,28 @@ class CommentView(View):
             
             Comment.objects.create( 
                 reply   = reply,
-                user    = user.id,
+                user    = user,
                 posting = posting_id
             )
+            return JsonResponse({"message" : "SUCCESS"}, status=201)
 
         except KeyError:
-             return JsonResponse({"message" : "INVALID_REPLY"})
+             return JsonResponse({"message" : "INVALID_REPLY"}, status=401)     
+
+    def get(self,request,posting_id):
+        
+        try:
+        
+            comment = Posting.objects.get(id=posting_id).comment_set.values('reply')
+            user    = comment.user
+        
+            results= {
+                "comment" : comment,
+                "user"    : user.name
+                }
+        
+            return JsonResponse({"message":"SUCCESS", "results" : results})
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"message": "INVALID_COMMENT"})
+
