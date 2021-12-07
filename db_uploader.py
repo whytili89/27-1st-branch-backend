@@ -12,10 +12,10 @@ from branch_tags.models import PostingTag, UserTag
 from postings.models import Posting
 
 CSV_PATH_USERS         = "csv/users.csv"
-CSV_PATH_KEYWORDS      = "csv/keyword_fake_data.csv"
-CSV_PATH_POSTINGS      = "csv/posting_fake.csv"
-CSV_PATH_PORSTING_TAGS = "csv/posting_tag_fake_data.csv"
-CSV_PATH_USER_TAGS     = "csv/user_tag_fake_data.csv"
+CSV_PATH_KEYWORDS      = "csv/keywords.csv"
+CSV_PATH_POSTINGS      = "csv/postings.csv"
+CSV_PATH_PORSTING_TAGS = "csv/posting_tags.csv"
+CSV_PATH_USER_TAGS     = "csv/user_tags.csv"
 
 if not User.objects.all() :
     with open(CSV_PATH_USERS) as (in_file) : 

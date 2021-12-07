@@ -1,7 +1,8 @@
 import json, bcrypt, jwt
 
-from django.views import View
-from django.http  import JsonResponse
+from django.core.exceptions import ValidationError
+from django.views           import View
+from django.http            import JsonResponse
 from django.db.models import Count, Q
 
 from .models      import User
@@ -48,9 +49,11 @@ class SignUpView(View):
                 position      = position
             )
             return JsonResponse({'message':'SUCCESS!'}, status=201)
-
+        
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'message': e.message}, status=400)
 
 class SignInView(View):
     def post(self, request):
@@ -76,6 +79,54 @@ class SignInView(View):
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
+        except ValidationError as e:
+            return JsonResponse({'message': e.message}, status=400)
+
+class UserProfileView(View):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            result = {
+                "name"          : user.name,
+                "nickname"      : user.nickname,
+                "email"         : user.email,
+                "description"   : user.description,
+                "position"      : user.position,
+                "github"        : user.github,
+                "profile_photo" : user.profile_photo
+            }
+            return JsonResponse({"message" : "SUCCESS", "result" : result}, status=200)
+        
+        except User.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_USER"}, status=401)
+
+        except User.MultipleObjectsReturned:
+             return JsonResponse({"message" : "INVALID_USER"}, status=401)  
+    
+    def post(self, request, user_id):
+        try:
+            data               = json.loads(request.body)
+            user               = User.objects.get(id = user_id)
+            email              = data.get("email", user.email)
+            phone_number       = data.get("phone_number", user.phone_number)
+            
+            validate_email(email)
+            validate_phone_number(phone_number)
+            
+            user.name          = data.get("name", user.name)
+            user.nickname      = data.get("nickname", user.nickname)
+            user.email         = email
+            user.description   = data.get("description", user.description)
+            user.position      = data.get("position", user.position)
+            user.github        = data.get("github", user.position)
+            user.profile_photo = data.get("profile_photo", user.position)
+            user.phone_number  = phone_number
+            user.save()
+            
+            return JsonResponse({"message":"SUCCESS"}, status=201) 
+        
+        except ValidationError: 
+            return JsonResponse({"message" : "INVALID_VALUE"}, status=400)
 
 class UserListView(View) :
     def get(self, request) :
