@@ -3,9 +3,29 @@ import json
 from django.views import View
 from django.http  import JsonResponse
 
-from .models      import Comment
 from .models      import Posting
+from .models      import Comment
 from core.utils   import login_decorator
+
+class PostListView(View):
+    def get(self, request, keyword_id):
+        order_method = request.GET.get('sort_method', 'created_at')
+        limit        = int(request.GET.get('limit', 100))
+        offset       = int(request.GET.get('offset', 0))
+
+        posts = Posting.objects.filter(keyword_id=keyword_id).select_related('user').order_by(order_method)[offset:limit]
+
+        results = [{
+            'title'      : post.title,
+            'sub_title'  : post.sub_title,
+            'content'    : post.content,
+            'thumbnail'  : post.thumbnail,
+            'user'       : post.user.nickname,
+            'created_at' : post.created_at, 
+            'tag'        : list(post.keyword.postingtag_set.values('name')) } for post in posts
+            ]
+        
+        return JsonResponse({'result':results}, status=200)
 
 
 class CommentView(View):
@@ -24,22 +44,4 @@ class CommentView(View):
             return JsonResponse({"message" : "SUCCESS"}, status=201)
 
         except KeyError:
-             return JsonResponse({"message" : "INVALID_REPLY"}, status=401)     
-
-    def get(self,request,posting_id):
-        
-        try:
-        
-            comment = Posting.objects.get(id=posting_id).comment_set.values('reply')
-            user    = comment.user
-        
-            results= {
-                "comment" : comment,
-                "user"    : user.name
-                }
-        
-            return JsonResponse({"message":"SUCCESS", "results" : results})
-
-        except Comment.DoesNotExist:
-            return JsonResponse({"message": "INVALID_COMMENT"})
-
+             return JsonResponse({"message" : "INVALID_REPLY"}, status=401)
