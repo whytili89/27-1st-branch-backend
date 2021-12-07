@@ -1,8 +1,8 @@
 import json, bcrypt, jwt
 
 from django.views import View
-from django.http  import JsonResponse, HttpResponse
-from django.db.models import Count
+from django.http  import JsonResponse
+from django.db.models import Count, Q
 
 from .models      import User
 from branch_tags.models import UserTag
@@ -79,28 +79,27 @@ class SignInView(View):
 
 class UserListView(View) :
     def get(self, request) :
-        limit = int(request.GET.get('limit', 6))
-        offset = int(request.GET.get('offset', 0))
+        limit       = int(request.GET.get('limit', 6))
+        offset      = int(request.GET.get('offset', 0))
         user_tag_id = request.GET.get('user_tag_id', None)
-        keyword_id = request.GET.get('keyword_id', None)
+        keyword_id  = request.GET.get('keyword_id', None)
 
-        if keyword_id :
-            queryset = Posting.objects.filter(keyword_id=keyword_id).values('user_id')
+        q = Q()
+        if keyword_id:
+            q &= Q(posting__keyword_id=keyword_id)
 
-            postings = Posting.objects.select_related().values('user_id', 'user__name','user__profile_photo').annotate(post_count=Count('user_id')).filter(user_id__in=queryset).order_by('-post_count')
+        if user_tag_id:
+            q &= Q(user_tags__id=user_tag_id)
 
-            user_list=[user for user in postings]
+        users = User.objects.annotate(total_posting_count=Count("posting__id")).filter(q)
 
-        if user_tag_id :
-            userTag = UserTag.objects.get(id = user_tag_id)
-            users = userTag.users.order_by('?')[:limit]
+        results =[{
+            'profile_photo' : user.profile_photo,
+            'name'          : user.name,
+            'position'      : user.position,
+            'description'   : user.description,
+            'posting_count' : user.total_posting_count,
+            'tags'          : list(user.user_tags.values('name'))
+        } for user in users]
 
-            user_list=[{
-            'profile_photo': user.profile_photo,
-            'name'         : user.name,
-            'position'     : user.position,
-            'description'  : user.description,
-            'tags'         : list(user.user_tags.values('name'))
-            } for user in users]
-
-        return JsonResponse({'SUCCESS': user_list }, status=200)
+        return JsonResponse({'SUCCESS': results}, status=200)
