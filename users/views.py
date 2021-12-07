@@ -2,12 +2,16 @@ import json, bcrypt, jwt
 
 from django.core.exceptions import ValidationError
 from django.views           import View
-from django.http            import JsonResponse, HttpResponse
+from django.http            import JsonResponse
+from django.db.models import Count, Q
 
 from .models      import User
+from branch_tags.models import UserTag
+from postings.models import Posting
+
 from my_settings  import SECRET_KEY, ALGORITHM
 from .validation  import validate_email, validate_phone_number, validate_password
-from core.utils   import login_decorator
+from core.utils import login_decorator
 
 class SignUpView(View):
     def post(self, request):
@@ -58,7 +62,7 @@ class SignInView(View):
 
             email        = data.get('email')
             phone_number = data.get('phone_number')
-            
+
             if not email:
                 user = User.objects.get(phone_number=phone_number)
 
@@ -123,3 +127,30 @@ class UserProfileView(View):
         
         except ValidationError: 
             return JsonResponse({"message" : "INVALID_VALUE"}, status=400)
+
+class UserListView(View) :
+    def get(self, request) :
+        limit       = int(request.GET.get('limit', 6))
+        offset      = int(request.GET.get('offset', 0))
+        user_tag_id = request.GET.get('user_tag_id', None)
+        keyword_id  = request.GET.get('keyword_id', None)
+
+        q = Q()
+        if keyword_id:
+            q &= Q(posting__keyword_id=keyword_id)
+
+        if user_tag_id:
+            q &= Q(user_tags__id=user_tag_id)
+
+        users = User.objects.annotate(total_posting_count=Count("posting__id")).filter(q)
+
+        results =[{
+            'profile_photo' : user.profile_photo,
+            'name'          : user.name,
+            'position'      : user.position,
+            'description'   : user.description,
+            'posting_count' : user.total_posting_count,
+            'tags'          : list(user.user_tags.values('name'))
+        } for user in users]
+
+        return JsonResponse({'SUCCESS': results}, status=200)
