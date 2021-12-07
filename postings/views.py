@@ -1,16 +1,12 @@
 import json
 
-<<<<<<< HEAD
 from django.views import View
 from django.http  import JsonResponse
 
 from .models      import Posting
 from .models      import Comment
-from core.utils   import login_decorator
-=======
 from .models          import Posting
-from branch_tags.models import PostingTag
->>>>>>> main
+from core.utils   import login_decorator
 
 class PostListView(View):
     def get(self, request, keyword_id):
@@ -32,7 +28,27 @@ class PostListView(View):
         
         return JsonResponse({'result':results}, status=200)
 
-<<<<<<< HEAD
+class PostView(View):
+    def get(self,request,post_id):
+        try:
+            posting = Posting.objects.get(id=post_id)
+
+            results = {
+                "title"        : posting.title,
+                "sub_title"    : posting.sub_title,
+                "content"      : posting.content,
+                "thumbnail"    : posting.thumbnail,
+                "description"  : posting.user.description,
+                "nickname"     : posting.user.nickname,
+                "created_at"   : posting.created_at,
+                "updated_at"   : posting.updated_at,
+                "posting_tags" : list(posting.posting_tags.values("name"))
+            } 
+
+            return JsonResponse({"message": "SUCCESS", "results" : results }, status=200)
+
+        except Posting.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_POSTING"}, status=401)
 
 class CommentView(View):
     @login_decorator
@@ -71,28 +87,3 @@ class CommentView(View):
         
         except Comment.DoesNotExist:
             return JsonResponse({"message": "INVALID_COMMENT"}, status=401)
-
-
-=======
-class PostView(View):
-    def get(self,request,post_id):
-        try:
-            posting = Posting.objects.get(id=post_id)
-
-            results = {
-                "title"        : posting.title,
-                "sub_title"    : posting.sub_title,
-                "content"      : posting.content,
-                "thumbnail"    : posting.thumbnail,
-                "description"  : posting.user.description,
-                "nickname"     : posting.user.nickname,
-                "created_at"   : posting.created_at,
-                "updated_at"   : posting.updated_at,
-                "posting_tags" : list(posting.posting_tags.values("name"))
-            } 
-
-            return JsonResponse({"message": "SUCCESS", "results" : results }, status=200)
-
-        except Posting.DoesNotExist:
-            return JsonResponse({"message" : "INVALID_POSTING"}, status=401)
->>>>>>> main
