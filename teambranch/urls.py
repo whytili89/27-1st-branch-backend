@@ -4,4 +4,9 @@ urlpatterns = [
     path('users', include('users.urls')),
     path('branch_tags', include('branch_tags.urls')),
     path('postings', include('postings.urls')),
+<<<<<<< HEAD
 ]
+=======
+    path('keywords', include('keywords.urls')),
+]
+>>>>>>> main
