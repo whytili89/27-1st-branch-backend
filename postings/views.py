@@ -1,8 +1,11 @@
-from django.views     import View
-from django.http      import JsonResponse, HttpResponse
+import json
 
-from .models          import Posting
-from branch_tags.models import PostingTag
+from django.views import View
+from django.http  import JsonResponse
+
+from .models      import Posting
+from .models      import Comment
+from core.utils   import login_decorator
 
 class PostListView(View):
     def get(self, request, keyword_id):
@@ -24,10 +27,14 @@ class PostListView(View):
         
         return JsonResponse({'result':results}, status=200)
 
+
 class PostView(View):
-    def get(self,request,post_id):
+    def get(self,request,posting_id):
         try:
-            posting = Posting.objects.get(id=post_id)
+            posting = Posting.objects.get(id=posting_id)
+            print(posting)
+            prev_posting = Posting.objects.filter(id__lt=posting_id, user_id=posting.user_id).values('id', 'title').order_by('-id')[:1]
+            next_posting = Posting.objects.filter(id__gt=posting_id, user_id=posting.user_id).values('id', 'title')[:1]
 
             results = {
                 "title"        : posting.title,
@@ -38,10 +45,15 @@ class PostView(View):
                 "nickname"     : posting.user.nickname,
                 "created_at"   : posting.created_at,
                 "updated_at"   : posting.updated_at,
-                "posting_tags" : list(posting.posting_tags.values("name"))
+                "posting_tags" : list(posting.posting_tags.values("name")),
+                "prev_posting" : prev_posting[0] if prev_posting  else None,
+                "next_posting" : next_posting[0] if next_posting  else None,
+
+
             } 
 
             return JsonResponse({"message": "SUCCESS", "results" : results }, status=200)
 
         except Posting.DoesNotExist:
             return JsonResponse({"message" : "INVALID_POSTING"}, status=401)
+
