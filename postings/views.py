@@ -11,16 +11,17 @@ class PostView(View):
     def get(self,request,post_id):
         try:
             posting = Posting.objects.get(id=post_id)
-            posting_tags = Posting.objects.get(id=post_id).posting_tags.values("name")
-            
-            
+
             results = {
-                "title"       : posting.title,
-                "created_at"  : posting.created_at,
-                "content"     : posting.content,
-                "description" : posting.user.description,
-                "nickname"    : posting.user.nickname,
-                "post_tags"   : posting_tags
+                "title"        : posting.title,
+                "sub_title"    : posting.sub_title,
+                "content"      : posting.content,
+                "thumbnail"    : posting.thumbnail,
+                "description"  : posting.user.description,
+                "nickname"     : posting.user.nickname,
+                "created_at"   : posting.created_at,
+                "updated_at"   : posting.updated_at,
+                "posting_tags" : list(posting.posting_tags.values("name"))
             } 
 
             return JsonResponse({"message": "SUCCESS", "results" : results })
