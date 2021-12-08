@@ -21,7 +21,11 @@ class UsersUserTags(models.Model):
 
     class Meta:
         db_table = 'users_usertags'
-        unique_together = ('user', 'user_tag')
+        constraints = [
+            models.constraints.UniqueConstraint(
+            fields=['user', 'user_tag'], name='unique_user_user_tag'
+            )
+        ]
 
 class PostingTag(TimeStampModel):
     name       = models.CharField(max_length=45, unique=True)
@@ -39,4 +43,8 @@ class PostingsPostingTags(models.Model):
 
     class Meta:
         db_table = 'postings_postingtags'
-        unique_together = ('posting', 'posting_tag')
+        constraints = [
+            models.constraints.UniqueConstraint(
+            fields=['posting', 'posting_tag'], name='unique_posting_posting_tag'
+            )
+        ]
