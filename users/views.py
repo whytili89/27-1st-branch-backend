@@ -142,7 +142,7 @@ class UserListView(View) :
         if user_tag_id:
             q &= Q(user_tags__id=user_tag_id)
 
-        users = User.objects.annotate(total_posting_count=Count("posting__id")).filter(q)
+        users = User.objects.annotate(total_posting_count=Count("posting__id")).filter(q).order_by('-total_posting_count')[offset:limit]
 
         results =[{
             'profile_photo' : user.profile_photo,
@@ -150,7 +150,7 @@ class UserListView(View) :
             'position'      : user.position,
             'description'   : user.description,
             'posting_count' : user.total_posting_count,
-            'tags'          : list(user.user_tags.values('name'))
+            'tags'          : list(user.user_tags.values('id','name'))
         } for user in users]
 
         return JsonResponse({'SUCCESS': results}, status=200)
