@@ -100,8 +100,7 @@ class UserProfileView(View):
         except User.DoesNotExist:
             return JsonResponse({"message" : "INVALID_USER"}, status=401)
 
-        except User.MultipleObjectsReturned:
-             return JsonResponse({"message" : "INVALID_USER"}, status=401)  
+
     
     def post(self, request, user_id):
         try:
@@ -154,3 +153,20 @@ class UserListView(View) :
         } for user in users]
 
         return JsonResponse({'SUCCESS': results}, status=200)
+
+class MyProfileView(View):
+    @login_decorator
+    def get(self, request):
+        result = {
+            "name"          : request.user.name,
+            "nickname"      : request.user.nickname,
+            "email"         : request.user.email,
+            "description"   : request.user.description,
+            "position"      : request.user.position,
+            "github"        : request.user.github,
+            "profile_photo" : request.user.profile_photo
+            }
+        
+        return JsonResponse({"message" : "SUCCESS", "result" : result}, status=200)
+    
+
