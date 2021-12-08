@@ -72,18 +72,32 @@ class CommentView(View):
              return JsonResponse({"message" : "INVALID_REPLY"}, status=401)
 
         except Posting.DoesNotExist:
-            return JsonResponse({"message": "POSTING_INVALID"}, status=400)     
+            return JsonResponse({"message": "INVALID_POSTING"}, status=400)     
     
     def get(self,request,posting_id):
         try:
         
-            comment = Posting.objects.get(id=posting_id).comment_set.values('reply')
+            comments = Posting.objects.get(id=posting_id).comment_set.values('reply','user__name')
             
-            results= {
-                "comment" : list(comment)
+            results= [comment for comment in comments]
 
-            }
             return JsonResponse({"message":"SUCCESS", "results" : results}, status=201)
         
         except Comment.DoesNotExist:
             return JsonResponse({"message": "INVALID_COMMENT"}, status=401)
+        
+    @login_decorator
+    def delete(self,request,comment_id):
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+            if request.user.id == comment.user.id:
+                comment.delete()
+                return JsonResponse({"message" : "COMMENT_DELETE"}, status=201)
+            
+            return JsonResponse({"message" : "INVALID_USER"}, status=401) 
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_COMMENT"}, status=401)    
+
+            
