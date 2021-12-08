@@ -98,6 +98,4 @@ class CommentView(View):
             return JsonResponse({"message" : "INVALID_USER"}, status=401) 
 
         except Comment.DoesNotExist:
-            return JsonResponse({"message" : "INVALID_COMMENT"}, status=401)    
-
-            
+            return JsonResponse({"message" : "INVALID_COMMENT"}, status=401)
