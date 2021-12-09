@@ -21,17 +21,17 @@ class PostListView(View):
             if kwargs :
                 q  &=Q(keyword_id=kwargs['keyword_id'])
 
-            posts = Posting.objects.filter(q).select_related('user').order_by(order_method)[offset:limit]
+            postings = Posting.objects.filter(q).select_related('user').order_by(order_method)[offset:limit]
 
             results = [{
-                'id'        : post.id,
-                'title'     : post.title,
-                'sub_title' : post.sub_title,
-                'content'   : post.content,
-                'thumbnail' : post.thumbnail,
-                'user'      : post.user.nickname,
-                'created_at': post.created_at,
-                'tag'       : list(post.keyword.postingtag_set.values('name')) } for post in posts
+                'posting_id': posting.id,
+                'title'     : posting.title,
+                'sub_title' : posting.sub_title,
+                'content'   : posting.content,
+                'thumbnail' : posting.thumbnail,
+                'user'      : posting.user.nickname,
+                'created_at': posting.created_at,
+                'tag'       : list(posting.keyword.postingtag_set.values('name')) } for posting in postings
                 ]
 
             return JsonResponse({'result':results}, status=200)
@@ -46,17 +46,18 @@ class PostView(View):
             next_posting = Posting.objects.filter(id__gt=posting_id, user_id=posting.user_id).values('id', 'title')[:1]
 
             results = {
-                "title"        : posting.title,
-                "sub_title"    : posting.sub_title,
-                "content"      : posting.content,
-                "thumbnail"    : posting.thumbnail,
-                "description"  : posting.user.description,
-                "nickname"     : posting.user.nickname,
-                "created_at"   : posting.created_at,
-                "updated_at"   : posting.updated_at,
-                "posting_tags" : list(posting.posting_tags.values("name")),
-                "prev_posting" : prev_posting[0] if prev_posting  else None,
-                "next_posting" : next_posting[0] if next_posting  else None,
+                "posting_id"  : posting.id,
+                "title"       : posting.title,
+                "sub_title"   : posting.sub_title,
+                "content"     : posting.content,
+                "thumbnail"   : posting.thumbnail,
+                "description" : posting.user.description,
+                "nickname"    : posting.user.nickname,
+                "created_at"  : posting.created_at,
+                "updated_at"  : posting.updated_at,
+                "posting_tags": list(posting.posting_tags.values("name")),
+                "prev_posting": prev_posting[0] if prev_posting  else None,
+                "next_posting": next_posting[0] if next_posting  else None,
             } 
 
             return JsonResponse({"message": "SUCCESS", "results" : results }, status=200)
@@ -90,8 +91,8 @@ class LikeView(View):
 
         try:
             postings_user_liked = [{
-                'posting_id' : posting.id,
-                'like_count' : Like.objects.filter(posting_id = posting.id).count()
+                'posting_id': posting.id,
+                'like_count': Like.objects.filter(posting_id = posting.id).count()
             } for posting in postings]
 
             return JsonResponse({
