@@ -1,5 +1,3 @@
-
-from postings.models import Like
 from django.urls import path, include
 
 from .views      import LikeView, PostListView

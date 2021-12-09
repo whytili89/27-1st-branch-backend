@@ -87,13 +87,14 @@ class PublicUserView(View):
         try:
             user = User.objects.get(id=user_id)
             result = {
-                "name"          : user.name,
-                "nickname"      : user.nickname,
-                "email"         : user.email,
-                "description"   : user.description,
-                "position"      : user.position,
-                "github"        : user.github,
-                "profile_photo" : user.profile_photo
+                "user_id"      : user.id,
+                "name"         : user.name,
+                "nickname"     : user.nickname,
+                "email"        : user.email,
+                "description"  : user.description,
+                "position"     : user.position,
+                "github"       : user.github,
+                "profile_photo": user.profile_photo
             }
             return JsonResponse({"message" : "SUCCESS", "result" : result}, status=200)
         
@@ -145,12 +146,13 @@ class UserListView(View) :
         users= User.objects.annotate(total_posting=Subquery(user_list_subquery)).filter(q).order_by('-total_posting')[offset:limit]
 
         results =[{
-            'profile_photo' : user.profile_photo,
-            'name'          : user.name,
-            'position'      : user.position,
-            'description'   : user.description,
-            'posting_count' : user.total_posting,
-            'tags'          : list(user.user_tags.values('id', 'name'))
+            'user_id'      : user.id,
+            'profile_photo': user.profile_photo,
+            'name'         : user.name,
+            'position'     : user.position,
+            'description'  : user.description,
+            'posting_count': user.total_posting,
+            'tags'         : list(user.user_tags.values('id', 'name'))
         } for user in users]
 
         return JsonResponse({'SUCCESS': results}, status=200)
@@ -159,13 +161,14 @@ class PrivateUserView(View):
     @login_decorator
     def get(self, request):
         result = {
-            "name"          : request.user.name,
-            "nickname"      : request.user.nickname,
-            "email"         : request.user.email,
-            "description"   : request.user.description,
-            "position"      : request.user.position,
-            "github"        : request.user.github,
-            "profile_photo" : request.user.profile_photo
+            "user_id"      : request.user.id,
+            "name"         : request.user.name,
+            "nickname"     : request.user.nickname,
+            "email"        : request.user.email,
+            "description"  : request.user.description,
+            "position"     : request.user.position,
+            "github"       : request.user.github,
+            "profile_photo": request.user.profile_photo
             }
         
         return JsonResponse({"message" : "SUCCESS", "result" : result}, status=200)
