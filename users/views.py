@@ -86,6 +86,9 @@ class UserProfileView(View):
     def get(self, request, user_id):
         try:
             user = User.objects.get(id=user_id)
+            subscribing = Subscribe.objects.filter(subscribing_id=user_id).count()
+            subscriber = Subscribe.objects.filter(subscriber_id=user_id).count()
+
             result = {
                 "name"          : user.name,
                 "nickname"      : user.nickname,
@@ -177,3 +180,5 @@ class SubscribeView(View) :
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
         except User.DoesNotExist :
             return JsonResponse({'MESSAGE' : 'USER_DOSE_NOT_EXIST'}, status=400)
+
+
