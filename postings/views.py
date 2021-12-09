@@ -65,14 +65,14 @@ class CommentView(View):
             
             Comment.objects.create( 
                 reply   = reply,
-                user    = user,
+                user    = request.user,
                 posting = posting
             )
 
             return JsonResponse({"message" : "SUCCESS"}, status=201)
 
         except KeyError:
-             return JsonResponse({"message" : "INVALID_REPLY"}, status=401)
+             return JsonResponse({"message" : "KEY_ERROR"}, status=401)
 
         except Posting.DoesNotExist:
             return JsonResponse({"message": "INVALID_POSTING"}, status=400)     
