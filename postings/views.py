@@ -93,12 +93,7 @@ class CommentView(View):
     def delete(self,request,comment_id):
         
         try:
-            comment = Comment.objects.get(id=comment_id)
-            if request.user.id == comment.user.id:
-                comment.delete()
-                return JsonResponse({"message" : "COMMENT_DELETE"}, status=201)
-            
-            return JsonResponse({"message" : "INVALID_USER"}, status=401) 
-
+            Comment.objects.get(id=comment_id, user=request.user.id).delete()
+        
         except Comment.DoesNotExist:
             return JsonResponse({"message" : "INVALID_COMMENT"}, status=401)
