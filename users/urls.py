@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views      import SignUpView, SignInView, SubscribeView, UserListView, UserProfileView
+from .views      import SignUpView, SignInView, SubscribeView, UserListView
 from .views      import PublicUserView, PrivateUserView
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('/', UserListView.as_view()),
     path('/public/user/<int:user_id>', PublicUserView.as_view()),
     path('/private/user', PrivateUserView.as_view()),
+    path('/subscribe', SubscribeView.as_view()),
 ]

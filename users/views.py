@@ -86,8 +86,6 @@ class PublicUserView(View):
     def get(self, request, user_id):
         try:
             user = User.objects.get(id=user_id)
-            subscribing = Subscribe.objects.filter(subscribing_id=user_id).count()
-            subscriber = Subscribe.objects.filter(subscriber_id=user_id).count()
 
             result = {
                 "user_id"      : user.id,
