@@ -60,17 +60,15 @@ class LikeView(View):
         try:
             data = json.loads(request.body)
             user = request.user
-
+            
             like, created = Like.objects.get_or_create(user_id = user.id, posting_id = data['posting_id'])
 
-            like.save()
-
-            print(like, created)
-
             if not created:
+               
                 like.delete()
-
-            return JsonResponse({'message':'SUCCESS'}, status=200)
+                return JsonResponse({'message':'CANCELED_LIKE'}, status=201)
+              
+            return JsonResponse({'message':'SUCCESS_LIKE'}, status=200)
 
         except JSONDecodeError:
           return JsonResponse({'message':'JSON_DECODE_EEROR'}, status=400)
