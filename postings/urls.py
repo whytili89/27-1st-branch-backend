@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-from postings.models import Like
-from django.urls import path
-=======
 from django.urls import path, include
->>>>>>> main
 
 from .views      import LikeView, PostListView
 from .views      import PostView
