@@ -103,11 +103,11 @@ class LikeView(View):
 
 class CommentView(View):
     @login_decorator
-    def post(self,request,posting_id):
+    def post(self, request ,posting_id):
         try:
             data    = json.loads(request.body)
 
-            posting= Posting.objects.get(id=posting_id)
+            posting = Posting.objects.get(id=posting_id)
             reply   = data['reply'] 
             user    = request.user
             
@@ -125,7 +125,7 @@ class CommentView(View):
         except Posting.DoesNotExist:
             return JsonResponse({"message": "INVALID_POSTING"}, status=400)     
     
-    def get(self,request,posting_id):
+    def get(self, request, posting_id):
         try:
         
             comments = Posting.objects.get(id=posting_id).comment_set.values('reply','user__name')
@@ -134,7 +134,7 @@ class CommentView(View):
 
             return JsonResponse({"message":"SUCCESS", "results" : results}, status=201)
         
-        except Comment.DoesNotExist:
+        except Posting.DoesNotExist:
             return JsonResponse({"message": "INVALID_COMMENT"}, status=401)
         
     @login_decorator
