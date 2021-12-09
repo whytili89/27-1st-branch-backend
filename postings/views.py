@@ -65,7 +65,7 @@ class CommentView(View):
             
             Comment.objects.create( 
                 reply   = reply,
-                user    = request.user,
+                user    = user,
                 posting = posting
             )
 
