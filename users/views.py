@@ -3,7 +3,7 @@ import json, bcrypt, jwt
 from django.core.exceptions import ValidationError
 from django.views           import View
 from django.http            import JsonResponse
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Subquery, OuterRef
 
 from .models      import User
 from branch_tags.models import UserTag
@@ -142,15 +142,16 @@ class UserListView(View) :
         if user_tag_id:
             q &= Q(user_tags__id=user_tag_id)
 
-        users = User.objects.annotate(total_posting_count=Count("posting__id")).filter(q)
+        user_list_subquery = Posting.objects.filter(user_id=OuterRef('pk')).values('user_id').annotate(total_posting=Count('id')).values('total_posting')
+        users= User.objects.annotate(total_posting=Subquery(user_list_subquery)).filter(q).order_by('-total_posting')[offset:limit]
 
         results =[{
             'profile_photo' : user.profile_photo,
             'name'          : user.name,
             'position'      : user.position,
             'description'   : user.description,
-            'posting_count' : user.total_posting_count,
-            'tags'          : list(user.user_tags.values('name'))
+            'posting_count' : user.total_posting,
+            'tags'          : list(user.user_tags.values('id', 'name'))
         } for user in users]
 
         return JsonResponse({'SUCCESS': results}, status=200)
