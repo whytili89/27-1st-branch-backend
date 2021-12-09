@@ -82,7 +82,7 @@ class SignInView(View):
         except ValidationError as e:
             return JsonResponse({'message': e.message}, status=400)
 
-class UserProfileView(View):
+class PublicUserView(View):
     def get(self, request, user_id):
         try:
             user = User.objects.get(id=user_id)
@@ -154,7 +154,7 @@ class UserListView(View) :
 
         return JsonResponse({'SUCCESS': results}, status=200)
 
-class MyProfileView(View):
+class PrivateUserView(View):
     @login_decorator
     def get(self, request):
         result = {
