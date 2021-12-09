@@ -10,28 +10,32 @@ from core.utils   import login_decorator
 
 class PostListView(View):
     def get(self, request, **kwargs):
-        order_method = request.GET.get('sort_method', 'created_at')
-        limit        = int(request.GET.get('limit', 100))
-        offset       = int(request.GET.get('offset', 0))
-            
-        q= Q()
+        try :  
+            order_method = request.GET.get('sort_method', 'created_at')
+            limit        = int(request.GET.get('limit', 100))
+            offset       = int(request.GET.get('offset', 0))
 
-        if kwargs :
-            q  &=Q(keyword_id=kwargs['keyword_id'])
-        
-        posts = Posting.objects.filter(q).select_related('user').order_by(order_method)[offset:limit]
-        
-        results = [{
-            'title'      : post.title,
-            'sub_title'  : post.sub_title,
-            'content'    : post.content,
-            'thumbnail'  : post.thumbnail,
-            'user'       : post.user.nickname,
-            'created_at' : post.created_at, 
-            'tag'        : list(post.keyword.postingtag_set.values('name')) } for post in posts
-            ]
-        
-        return JsonResponse({'result':results}, status=200)
+            q= Q()
+
+            if kwargs :
+                q  &=Q(keyword_id=kwargs['keyword_id'])
+
+            posts = Posting.objects.filter(q).select_related('user').order_by(order_method)[offset:limit]
+
+            results = [{
+                'id'        : post.id,
+                'title'     : post.title,
+                'sub_title' : post.sub_title,
+                'content'   : post.content,
+                'thumbnail' : post.thumbnail,
+                'user'      : post.user.nickname,
+                'created_at': post.created_at,
+                'tag'       : list(post.keyword.postingtag_set.values('name')) } for post in posts
+                ]
+
+            return JsonResponse({'result':results}, status=200)
+        except KeyError :
+            return JsonResponse({'MESSGE':'KEY_ERROR'}, status=400)
 
 class PostView(View):
     def get(self,request,posting_id):
@@ -39,7 +43,7 @@ class PostView(View):
             posting      = Posting.objects.get(id=posting_id)
             prev_posting = Posting.objects.filter(id__lt=posting_id, user_id=posting.user_id).values('id', 'title').order_by('-id')[:1]
             next_posting = Posting.objects.filter(id__gt=posting_id, user_id=posting.user_id).values('id', 'title')[:1]
-            
+
             results = {
                 "title"        : posting.title,
                 "sub_title"    : posting.sub_title,
