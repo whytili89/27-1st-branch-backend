@@ -14,10 +14,12 @@ class PostListView(View):
         limit        = int(request.GET.get('limit', 100))
         offset       = int(request.GET.get('offset', 0))
             
+        q= Q()
+
         if kwargs :
-            posts = Posting.objects.filter(keyword_id=kwargs['keyword_id']).select_related('user').order_by(order_method)[offset:limit]
+            q  &=Q(keyword_id=kwargs['keyword_id'])
         
-        posts = Posting.objects.all().select_related('user').order_by(order_method)[offset:limit]
+        posts = Posting.objects.filter(q).select_related('user').order_by(order_method)[offset:limit]
         
         results = [{
             'title'      : post.title,
