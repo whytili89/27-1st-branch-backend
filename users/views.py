@@ -5,7 +5,7 @@ from django.views           import View
 from django.http            import JsonResponse
 from django.db.models import Count, Q
 
-from .models      import User
+from .models      import User, Subscribe
 from branch_tags.models import UserTag
 from postings.models import Posting
 
@@ -154,3 +154,26 @@ class UserListView(View) :
         } for user in users]
 
         return JsonResponse({'SUCCESS': results}, status=200)
+
+class SubscribeView(View) :
+    @login_decorator
+    def post(self, request) :
+        try : 
+            data = json.loads(request.body)
+
+            subscribing = request.user
+            subscriber = User.objects.get(id=data['subscriber_id'])
+
+            if subscribing.id == subscriber.id :
+                return JsonResponse({'MESSAGE' : 'YOU_CAN_NOT_SUBSCRIBE_YOURSELF'}, status=400)
+            subscribed, created = Subscribe.objects.get_or_create(subscribing= subscribing, subscriber= subscriber)
+
+            if not created :
+                subscribed.delete()
+                return JsonResponse({'SUCCESS':'UNSUBSCRIBED'}, status=201)
+            return JsonResponse({'SUCCESS':'SUBSCRIBED!'}, status=201)
+                
+        except KeyError :
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        except User.DoesNotExist :
+            return JsonResponse({'MESSAGE' : 'USER_DOSE_NOT_EXIST'}, status=400)
