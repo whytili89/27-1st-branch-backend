@@ -1,4 +1,5 @@
 from django.db                 import models
+from django.db.models.deletion import CASCADE
 
 from users.models              import User
 from keywords.models           import Keyword

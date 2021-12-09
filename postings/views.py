@@ -101,4 +101,48 @@ class LikeView(View):
         
         except AttributeError:
             return JsonResponse({'message':'AttributeError'}, status=400)
+
+class CommentView(View):
+    @login_decorator
+    def post(self, request ,posting_id):
+        try:
+            data    = json.loads(request.body)
+
+            posting = Posting.objects.get(id=posting_id)
+            reply   = data['reply'] 
+            user    = request.user
+            
+            Comment.objects.create( 
+                reply   = reply,
+                user    = user,
+                posting = posting
+            )
+
+            return JsonResponse({"message" : "SUCCESS"}, status=201)
+
+        except KeyError:
+             return JsonResponse({"message" : "KEY_ERROR"}, status=401)
+
+        except Posting.DoesNotExist:
+            return JsonResponse({"message": "INVALID_POSTING"}, status=400)     
+    
+    def get(self, request, posting_id):
+        try:
         
+            comments = Posting.objects.get(id=posting_id).comment_set.values('reply','user__name')
+            
+            results= [comment for comment in comments]
+
+            return JsonResponse({"message":"SUCCESS", "results" : results}, status=201)
+        
+        except Posting.DoesNotExist:
+            return JsonResponse({"message": "INVALID_COMMENT"}, status=401)
+        
+    @login_decorator
+    def delete(self,request,comment_id):
+        
+        try:
+            Comment.objects.get(id=comment_id, user=request.user.id).delete()
+        
+        except Comment.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_COMMENT"}, status=401)
